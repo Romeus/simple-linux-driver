@@ -69,14 +69,16 @@ out:
 }
 
 ssize_t buffer_write(struct file *filp, const char __user *buff, size_t count, loff_t *offp) {
-	printk(KERN_ALERT "+ buffer write");
 	ssize_t retval = count;
-	
 	struct my_buffer *my_buff;
+	unsigned int copy_size;
+	int i;
+
+	printk(KERN_ALERT "+ buffer write");
+	
 	my_buff = filp->private_data;
 	printk(KERN_ALERT "+ buffer address %p", my_buff);
 
-	unsigned int copy_size;
 	if(count > MY_BUFFER_SIZE) {
 		copy_size = MY_BUFFER_SIZE;
 	} else {
@@ -93,7 +95,11 @@ ssize_t buffer_write(struct file *filp, const char __user *buff, size_t count, l
 	*offp += my_buff->buffer_length;
 
 	printk(KERN_ALERT "+ buffer size %d", my_buff->buffer_length);
-	printk(KERN_ALERT "+ buffer %*ph", (void *)my_buff->my_mem);
+	//printk(KERN_ALERT "+ buffer %*ph", (void *)my_buff->my_mem);
+	for (i = 0; i < my_buff->buffer_length; i++) {
+		printk("%hhx ", my_buff->my_mem[i]);
+	}
+	printk("\n");
 	print_hex_dump_bytes("+", DUMP_PREFIX_ADDRESS, my_buff->my_mem, my_buff->buffer_length);
 
 out:
